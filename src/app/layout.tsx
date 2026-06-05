@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ISP Billing",
-  description: "Customer & payment tracking",
+  description: "Customer and payment tracking for ISP staff",
 };
 
 export default function RootLayout({
