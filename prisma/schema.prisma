@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  OWNER
+  OPERATOR
+}
+
+enum CustomerStatus {
+  ACTIVE // paid, service running
+  OVERDUE // past due date, inside grace window
+  SUSPENDED // past grace window, service should be cut
+  DISCONNECTED // permanently removed / left
+}
+
+enum PaymentMethod {
+  CASH
+  JAZZCASH
+  EASYPAISA
+  BANK
+  OTHER
+}
+
+model Staff {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(OPERATOR)
+  createdAt    DateTime  @default(now())
+  payments     Payment[] @relation("RecordedBy")
+}
+
+model Customer {
+  id          String         @id @default(cuid())
+  fullName    String
+  phone       String?
+  cnic        String?
+  address     String?
+  area        String? // neighbourhood / locality, for filtering
+  panel       String // which panel: "1" or "2" (or panel name)
+  packageName String // e.g. "25 Mbps"
+  monthlyFee  Int // PKR, whole rupees
+  installDate DateTime?
+  status      CustomerStatus @default(ACTIVE)
+  paidUntil   DateTime? // service is paid through this date
+  notes       String? // free text: type anything about this person
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  payments    Payment[]
+
+  @@index([status])
+  @@index([panel])
+  @@index([area])
+  @@index([fullName])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId    String
+  amount        Int // PKR
+  method        PaymentMethod @default(CASH)
+  monthsCovered Int           @default(1)
+  paidOn        DateTime      @default(now())
+  note          String?
+  recordedBy    Staff?        @relation("RecordedBy", fields: [recordedById], references: [id])
+  recordedById  String?
+  createdAt     DateTime      @default(now())
+
+  @@index([customerId])
+  @@index([paidOn])
+}
