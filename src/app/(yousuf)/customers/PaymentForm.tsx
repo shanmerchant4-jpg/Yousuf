@@ -51,8 +51,8 @@ export function PaymentForm({
         </div>
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-600">Payment recorded. Status updated.</p>}
+      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state?.ok && <p className="text-sm text-emerald-400">Payment recorded. Status updated.</p>}
 
       <button type="submit" className="btn-primary w-full" disabled={pending}>
         {pending ? "Recording…" : "Record payment"}

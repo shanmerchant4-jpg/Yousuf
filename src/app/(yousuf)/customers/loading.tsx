@@ -27,7 +27,7 @@ export default function CustomersLoading() {
       {/* Table */}
       <div className="card overflow-hidden p-0">
         {/* Header row */}
-        <div className="flex gap-4 border-b border-slate-200 bg-slate-50 px-4 py-3">
+        <div className="flex gap-4 border-b border-surface-border bg-white/5 px-4 py-3">
           {[140, 96, 64, 80, 72, 80, 72].map((w, i) => (
             <div key={i} className={`skeleton h-3 rounded`} style={{ width: w }} />
           ))}
@@ -37,8 +37,8 @@ export default function CustomersLoading() {
           <div
             key={i}
             className={[
-              "flex items-center gap-4 px-4 py-3 border-b border-slate-100",
-              i % 2 === 1 ? "bg-slate-50/50" : "",
+              "flex items-center gap-4 px-4 py-3 border-b border-white/5",
+              i % 2 === 1 ? "bg-white/[0.03]" : "",
             ].join(" ")}
           >
             <div className="skeleton h-4 w-36" />

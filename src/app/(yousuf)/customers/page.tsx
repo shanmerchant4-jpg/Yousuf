@@ -70,13 +70,21 @@ export default async function CustomersPage({
     <div className="space-y-5">
       {/* Page header */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
-        <Link href="/customers/new" className="btn-primary">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Add customer
-        </Link>
+        <h1 className="text-2xl font-bold text-slate-100">Customers</h1>
+        <div className="flex items-center gap-2">
+          <Link href="/customers/import" className="btn-ghost">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Import CSV
+          </Link>
+          <Link href="/customers/new" className="btn-primary">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add customer
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -130,7 +138,7 @@ export default async function CustomersPage({
       {/* Table */}
       <div className="card overflow-x-auto p-0">
         <table className="w-full text-left text-sm" aria-label="Customer list">
-          <thead className="border-b border-slate-200 bg-slate-50">
+          <thead className="border-b border-surface-border bg-white/5">
             <tr>
               <th scope="col" className="table-header-cell">Name</th>
               <th scope="col" className="table-header-cell">Phone</th>
@@ -141,19 +149,19 @@ export default async function CustomersPage({
               <th scope="col" className="table-header-cell">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-white/5">
             {customers.map((c, i) => (
               <tr
                 key={c.id}
                 className={[
-                  "transition-colors hover:bg-brand-50/40",
-                  i % 2 === 1 ? "bg-slate-50/50" : "",
+                  "transition-colors hover:bg-white/5",
+                  i % 2 === 1 ? "bg-white/[0.03]" : "",
                 ].join(" ")}
               >
                 <td className="table-cell font-medium">
                   <Link
                     href={`/customers/${c.id}`}
-                    className="text-slate-900 hover:text-brand-600 focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="text-slate-100 hover:text-brand-400 focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     {c.fullName}
                   </Link>
@@ -170,12 +178,12 @@ export default async function CustomersPage({
               <tr>
                 <td colSpan={7} className="px-4 py-16 text-center">
                   <div className="mx-auto flex max-w-xs flex-col items-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/10">
                       <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                       </svg>
                     </div>
-                    <p className="text-sm font-medium text-slate-700">No customers found</p>
+                    <p className="text-sm font-medium text-slate-300">No customers found</p>
                     <p className="mt-1 text-xs text-slate-400">
                       {hasFilters ? "Try adjusting your filters." : "Add your first customer to get started."}
                     </p>
@@ -193,7 +201,7 @@ export default async function CustomersPage({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between text-sm text-slate-500">
+      <div className="flex items-center justify-between text-sm text-slate-400">
         <span>
           {total === 0
             ? "No customers."

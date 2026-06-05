@@ -1,16 +1,16 @@
 import { CustomerStatus } from "@prisma/client";
 
 const styles: Record<CustomerStatus, string> = {
-  ACTIVE: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-  OVERDUE: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  SUSPENDED: "bg-red-50 text-red-700 ring-1 ring-red-200",
-  DISCONNECTED: "bg-slate-100 text-slate-600 ring-1 ring-slate-200",
+  ACTIVE: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+  OVERDUE: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+  SUSPENDED: "bg-red-500/15 text-red-300 ring-red-500/30",
+  DISCONNECTED: "bg-slate-500/15 text-slate-300 ring-slate-500/30",
 };
 
 const dots: Record<CustomerStatus, string> = {
-  ACTIVE: "bg-emerald-500",
-  OVERDUE: "bg-amber-500",
-  SUSPENDED: "bg-red-500",
+  ACTIVE: "bg-emerald-400 shadow-[0_0_6px] shadow-emerald-400/60",
+  OVERDUE: "bg-amber-400 shadow-[0_0_6px] shadow-amber-400/60",
+  SUSPENDED: "bg-red-400 shadow-[0_0_6px] shadow-red-400/60",
   DISCONNECTED: "bg-slate-400",
 };
 

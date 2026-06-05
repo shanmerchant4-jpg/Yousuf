@@ -27,7 +27,7 @@ export function StatusControls({
       <button type="submit" className="btn-ghost" disabled={pending}>
         {pending ? "…" : "Set"}
       </button>
-      {state?.error && <span className="text-xs text-red-600">{state.error}</span>}
+      {state?.error && <span className="text-xs text-red-400">{state.error}</span>}
     </form>
   );
 }

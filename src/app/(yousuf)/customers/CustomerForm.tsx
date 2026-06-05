@@ -82,8 +82,8 @@ export function CustomerForm({
         </div>
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-600">Saved.</p>}
+      {state?.error && <p className="text-sm text-red-400">{state.error}</p>}
+      {state?.ok && <p className="text-sm text-emerald-400">Saved.</p>}
 
       <button type="submit" className="btn-primary" disabled={pending}>
         {pending ? "Saving…" : submitLabel}

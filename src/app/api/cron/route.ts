@@ -3,6 +3,7 @@ import { timingSafeEqual } from "crypto";
 import { CustomerStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { computeStatus } from "@/lib/billing";
+import { getGraceDays } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -50,10 +51,11 @@ async function run(req: NextRequest) {
   }
 
   const now = new Date();
+  const graceDays = await getGraceDays();
   const toUpdate: { id: string; next: CustomerStatus }[] = [];
 
   for (const c of customers) {
-    const next = computeStatus(c.paidUntil, now);
+    const next = computeStatus(c.paidUntil, now, graceDays);
     if (next !== c.status) {
       toUpdate.push({ id: c.id, next });
     }

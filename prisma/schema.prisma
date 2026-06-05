@@ -51,6 +51,7 @@ model Customer {
   installDate DateTime?
   status      CustomerStatus @default(ACTIVE)
   paidUntil   DateTime? // service is paid through this date
+  panelDisabledAt DateTime? // when staff marked them disabled in the Jazz panel; null = currently enabled
   notes       String? // free text: type anything about this person
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
@@ -60,6 +61,12 @@ model Customer {
   @@index([panel])
   @@index([area])
   @@index([fullName])
+}
+
+model Settings {
+  id        String   @id @default("singleton")
+  graceDays Int      @default(3)
+  updatedAt DateTime @updatedAt
 }
 
 model Payment {
