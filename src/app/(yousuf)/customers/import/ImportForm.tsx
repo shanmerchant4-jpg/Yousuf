@@ -44,8 +44,9 @@ export function ImportForm({ action }: { action: Action }) {
       {state && !state.error && (
         <div className="space-y-3 rounded-lg border border-surface-border bg-white/5 p-4">
           <p className="text-sm font-medium text-slate-100">
-            Imported <span className="text-emerald-400">{state.imported ?? 0}</span>, skipped{" "}
-            <span className="text-amber-300">{state.skipped ?? 0}</span>.
+            Imported <span className="text-emerald-400">{state.imported ?? 0}</span>,{" "}
+            duplicates skipped <span className="text-sky-300">{state.duplicates ?? 0}</span>,{" "}
+            invalid skipped <span className="text-amber-300">{state.skipped ?? 0}</span>.
           </p>
           {state.errors && state.errors.length > 0 && (
             <div>

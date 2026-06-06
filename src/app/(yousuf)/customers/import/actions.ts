@@ -12,6 +12,7 @@ export type ImportResult = {
   error?: string;
   imported?: number;
   skipped?: number;
+  duplicates?: number;
   errors?: string[];
 };
 
@@ -208,6 +209,39 @@ async function excelToText(f: File): Promise<string> {
   return XLSX.utils.sheet_to_csv(ws, { forceQuotes: false });
 }
 
+/**
+ * Content fingerprint of a customer, used to detect duplicates. Two rows with
+ * the same name, phone, CNIC, address, area, panel, package, fee, paid-until
+ * and notes are treated as the same customer and the later one is skipped.
+ * Values are trimmed + lower-cased so trivial spacing/casing differences match.
+ */
+function rowSignature(r: {
+  fullName: string;
+  phone: string | null;
+  cnic: string | null;
+  address: string | null;
+  area: string | null;
+  panel: string;
+  packageName: string;
+  monthlyFee: number;
+  paidUntil: Date | null;
+  notes: string | null;
+}): string {
+  const norm = (v: string | null) => (v ?? "").trim().toLowerCase();
+  return [
+    norm(r.fullName),
+    norm(r.phone),
+    norm(r.cnic),
+    norm(r.address),
+    norm(r.area),
+    norm(r.panel),
+    norm(r.packageName),
+    String(r.monthlyFee),
+    r.paidUntil ? r.paidUntil.toISOString().slice(0, 10) : "",
+    norm(r.notes),
+  ].join("|");
+}
+
 export async function importCustomers(_prev: unknown, fd: FormData): Promise<ImportResult> {
   const session = await getSession();
   if (!session) return { error: "Not authenticated." };
@@ -260,8 +294,33 @@ export async function importCustomers(_prev: unknown, fd: FormData): Promise<Imp
   const graceDays = await getGraceDays();
   const now = new Date();
 
+  // Fingerprint everyone already in the DB so identical rows are skipped.
+  // The same set also catches duplicates that appear twice within this file.
+  let seen: Set<string>;
+  try {
+    const existing = await db.customer.findMany({
+      select: {
+        fullName: true,
+        phone: true,
+        cnic: true,
+        address: true,
+        area: true,
+        panel: true,
+        packageName: true,
+        monthlyFee: true,
+        paidUntil: true,
+        notes: true,
+      },
+    });
+    seen = new Set(existing.map(rowSignature));
+  } catch (e) {
+    console.error("[importCustomers] load existing", e);
+    return { error: "Could not read existing customers to check for duplicates. Please try again." };
+  }
+
   const errors: string[] = [];
   let skipped = 0;
+  let duplicates = 0;
   const toInsert: Prisma.CustomerCreateManyInput[] = [];
 
   function cell(cells: string[], key: string): string {
@@ -313,6 +372,15 @@ export async function importCustomers(_prev: unknown, fd: FormData): Promise<Imp
     }
 
     const d = parsed.data;
+
+    // Skip if an identical customer already exists (DB) or appeared earlier in this file.
+    const signature = rowSignature(d);
+    if (seen.has(signature)) {
+      duplicates++;
+      continue;
+    }
+    seen.add(signature);
+
     toInsert.push({
       fullName: d.fullName,
       phone: d.phone,
@@ -343,5 +411,5 @@ export async function importCustomers(_prev: unknown, fd: FormData): Promise<Imp
     }
   }
 
-  return { imported, skipped, errors };
+  return { imported, skipped, duplicates, errors };
 }
