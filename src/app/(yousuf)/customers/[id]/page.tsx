@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { CustomerForm } from "../CustomerForm";
 import { PaymentForm } from "../PaymentForm";
 import { StatusControls } from "../StatusControls";
+import { PaidUntilForm } from "../PaidUntilForm";
 import { updateCustomer } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -143,6 +144,15 @@ export default async function CustomerDetail({
           <div className="card">
             <h2 className="mb-4 font-semibold text-slate-100">Record payment</h2>
             <PaymentForm customerId={customer.id} defaultAmount={customer.monthlyFee} />
+          </div>
+
+          {/* Set paid-until (manual) */}
+          <div className="card">
+            <h2 className="mb-4 font-semibold text-slate-100">Set paid-until</h2>
+            <PaidUntilForm
+              id={customer.id}
+              current={customer.paidUntil ? new Date(customer.paidUntil).toISOString().slice(0, 10) : ""}
+            />
           </div>
 
           {/* Service status */}

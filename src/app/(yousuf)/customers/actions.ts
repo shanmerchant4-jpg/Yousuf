@@ -7,6 +7,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { computeStatus, extendPaidUntil } from "@/lib/billing";
+import { getGraceDays } from "@/lib/settings";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -258,3 +259,42 @@ export async function recordPayment(_prev: unknown, fd: FormData) {
   return { ok: true };
 }
 
+const PaidUntilSchema = z.object({
+  id: z.string().min(1, "Missing customer id."),
+});
+
+/**
+ * Manually set (or clear) a customer's paid-until date. An empty value clears
+ * it. Status is recomputed from the new date using the configured grace window.
+ * This is separate from recording a payment — use it to correct dates by hand.
+ */
+export async function setPaidUntil(_prev: unknown, fd: FormData) {
+  const session = await getSession();
+  if (!session) return { error: "Not authenticated." };
+
+  const parsed = PaidUntilSchema.safeParse({ id: str(fd, "id") });
+  if (!parsed.success) return { error: zodMsg(parsed.error) };
+  const { id } = parsed.data;
+
+  const raw = str(fd, "paidUntil");
+  let paidUntil: Date | null = null;
+  if (raw !== "") {
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return { error: "Enter a valid date (or leave blank to clear)." };
+    paidUntil = d;
+  }
+
+  const graceDays = await getGraceDays();
+  const status = computeStatus(paidUntil, new Date(), graceDays);
+
+  try {
+    await db.customer.update({ where: { id }, data: { paidUntil, status } });
+  } catch (e) {
+    console.error("[setPaidUntil]", e);
+    return { error: "Failed to update paid-until. Please try again." };
+  }
+
+  revalidatePath(`/customers/${id}`);
+  revalidatePath("/");
+  return { ok: true };
+}
