@@ -31,6 +31,8 @@ export default async function CustomersPage({
       { phone: { contains: q } },
       { cnic: { contains: q } },
       { area: { contains: q, mode: "insensitive" } },
+      { address: { contains: q, mode: "insensitive" } },
+      { notes: { contains: q, mode: "insensitive" } },
     ];
   }
   if (status && STATUSES.includes(status as CustomerStatus))
@@ -102,7 +104,7 @@ export default async function CustomersPage({
                 id="q"
                 name="q"
                 defaultValue={q ?? ""}
-                placeholder="Name, phone, CNIC, area…"
+                placeholder="Name, phone, CNIC, area, address, logon ID…"
                 className="input pl-9"
                 aria-label="Search customers"
               />

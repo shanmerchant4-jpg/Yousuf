@@ -11,20 +11,27 @@ export function ImportForm({ action }: { action: Action }) {
   return (
     <form action={formAction} className="space-y-5">
       <div>
-        <label className="label" htmlFor="csvFile">Upload .csv file</label>
-        <input id="csvFile" name="csvFile" type="file" accept=".csv,text/csv" className="input" />
+        <label className="label" htmlFor="csvFile">Upload file</label>
+        <input
+          id="csvFile"
+          name="csvFile"
+          type="file"
+          accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+          className="input"
+        />
+        <p className="mt-1 text-xs text-slate-400">Excel (.xlsx, .xls) or CSV — Himalaya Network format is auto-detected</p>
       </div>
 
       <div className="text-center text-xs font-medium uppercase tracking-wide text-slate-400">or</div>
 
       <div>
-        <label className="label" htmlFor="csvText">Paste CSV text</label>
+        <label className="label" htmlFor="csvText">Paste data</label>
         <textarea
           id="csvText"
           name="csvText"
           rows={10}
           className="input font-mono text-xs"
-          placeholder="fullName,phone,cnic,address,area,panel,packageName,monthlyFee,paidUntil,notes"
+          placeholder={"fullName,phone,cnic,address,area,panel,packageName,monthlyFee,paidUntil,notes\nAli Hassan,03001234567,42201-1234567-1,Flat 3 Block B,,HC,15Mbps,1500,2026-07-01,"}
         />
       </div>
 
