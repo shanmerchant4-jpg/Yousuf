@@ -8,6 +8,7 @@ import { CustomerForm } from "../CustomerForm";
 import { PaymentForm } from "../PaymentForm";
 import { StatusControls } from "../StatusControls";
 import { PaidUntilForm } from "../PaidUntilForm";
+import { CustomerDangerControls } from "../CustomerDangerControls";
 import { updateCustomer } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -172,6 +173,15 @@ export default async function CustomerDetail({
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-300">{customer.notes}</p>
             </div>
           )}
+
+          {/* Danger zone */}
+          <div className="card border border-red-500/30">
+            <h2 className="mb-1 font-semibold text-red-300">Danger zone</h2>
+            <p className="mb-3 text-xs text-slate-400 leading-relaxed">
+              Remove this customer&apos;s payment history, or delete the customer entirely.
+            </p>
+            <CustomerDangerControls id={customer.id} />
+          </div>
         </div>
       </div>
     </div>

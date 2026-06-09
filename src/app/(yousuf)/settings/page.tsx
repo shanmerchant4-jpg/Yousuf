@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getGraceDays } from "@/lib/settings";
 import { updateSettings } from "./actions";
 import { SettingsForm } from "./SettingsForm";
+import { DangerZone } from "./DangerZone";
 
 export const metadata: Metadata = {
   title: "Settings — ISP Billing",
@@ -18,6 +19,8 @@ export default async function SettingsPage() {
       <div className="card">
         <SettingsForm action={updateSettings} graceDays={graceDays} />
       </div>
+
+      <DangerZone />
     </div>
   );
 }

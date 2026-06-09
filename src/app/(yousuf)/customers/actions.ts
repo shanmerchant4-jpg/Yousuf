@@ -298,3 +298,55 @@ export async function setPaidUntil(_prev: unknown, fd: FormData) {
   revalidatePath("/");
   return { ok: true };
 }
+
+
+// ---------------------------------------------------------------------------
+// Destructive per-customer actions
+// ---------------------------------------------------------------------------
+
+/** Permanently delete a customer and all their payments (cascade). */
+export async function deleteCustomer(_prev: unknown, fd: FormData): Promise<{ error?: string; ok?: boolean }> {
+  const session = await getSession();
+  if (!session) return { error: "Not authenticated." };
+
+  const id = str(fd, "id");
+  if (!id) return { error: "Missing customer id." };
+
+  try {
+    await db.customer.delete({ where: { id } });
+  } catch (e) {
+    console.error("[deleteCustomer]", e);
+    return { error: "Failed to delete customer. Please try again." };
+  }
+
+  redirect("/customers");
+}
+
+/**
+ * Remove a customer's payment data: delete every payment, clear paid-until and
+ * reset status to OVERDUE. The customer record itself stays.
+ */
+export async function clearCustomerPayments(_prev: unknown, fd: FormData) {
+  const session = await getSession();
+  if (!session) return { error: "Not authenticated." };
+
+  const id = str(fd, "id");
+  if (!id) return { error: "Missing customer id." };
+
+  try {
+    await db.$transaction([
+      db.payment.deleteMany({ where: { customerId: id } }),
+      db.customer.update({
+        where: { id },
+        data: { paidUntil: null, status: CustomerStatus.OVERDUE },
+      }),
+    ]);
+  } catch (e) {
+    console.error("[clearCustomerPayments]", e);
+    return { error: "Failed to remove payment data. Please try again." };
+  }
+
+  revalidatePath(`/customers/${id}`);
+  revalidatePath("/");
+  return { ok: true };
+}
